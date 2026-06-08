@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Pomodoro Timer</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(
+        -45deg,
+        #0f172a,
+        #1e1b4b,
+        #312e81,
+        #0f172a
+    );
+    background-size:400% 400%;
+    animation:bgMove 12s ease infinite;
+    overflow:hidden;
+}
+
+@keyframes bgMove{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+.card{
+    width:420px;
+    padding:35px;
+    border-radius:30px;
+    backdrop-filter:blur(18px);
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.15);
+    box-shadow:
+    0 8px 32px rgba(0,0,0,.4),
+    0 0 30px rgba(0,255,200,.15);
+    text-align:center;
+}
+
+h1{
+    color:white;
+    font-size:2rem;
+    margin-bottom:25px;
+}
+
+.progress-container{
+    position:relative;
+    width:260px;
+    height:260px;
+    margin:auto;
+}
+
+svg{
+    transform:rotate(-90deg);
+}
+
+circle{
+    fill:none;
+    stroke-width:12;
+}
+
+.bg{
+    stroke:rgba(255,255,255,.1);
+}
+
+.progress{
+    stroke:#00ffb3;
+    stroke-linecap:round;
+    stroke-dasharray:754;
+    stroke-dashoffset:0;
+    filter:drop-shadow(0 0 15px #00ffb3);
+}
+
+.timer{
+    position:absolute;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:4rem;
+    font-weight:700;
+    color:#00ffb3;
+    text-shadow:0 0 20px #00ffb3;
+}
+
+.buttons{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-top:30px;
+}
+
+button{
+    border:none;
+    padding:14px 24px;
+    border-radius:15px;
+    color:white;
+    cursor:pointer;
+    font-size:1rem;
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-4px) scale(1.05);
+}
+
+.start{
+    background:#00c853;
+}
+
+.pause{
+    background:#ffb300;
+}
+
+.reset{
+    background:#ff1744;
+}
+
+.mode{
+    color:#ccc;
+    margin-top:20px;
+    font-size:14px;
+    letter-spacing:2px;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+    <h1>🍅 Pomodoro Focus</h1>
+
+    <div class="progress-container">
+
+        <svg width="260" height="260">
+            <circle class="bg" cx="130" cy="130" r="120"></circle>
+
+            <circle
+                class="progress"
+                cx="130"
+                cy="130"
+                r="120">
+            </circle>
+        </svg>
+
+        <div class="timer" id="timer">
+            25:00
+        </div>
+
+    </div>
+
+    <div class="buttons">
+        <button class="start" id="start">
+            ▶ Start
+        </button>
+
+        <button class="pause" id="pause">
+            ⏸ Pause
+        </button>
+
+        <button class="reset" id="reset">
+            ↺ Reset
+        </button>
+    </div>
+
+    <div class="mode">
+        FOCUS SESSION
+    </div>
+
+</div>
+
+<script>
+const timer = document.getElementById("timer");
+const progress = document.querySelector(".progress");
+
+const startBtn = document.getElementById("start");
+const pauseBtn = document.getElementById("pause");
+const resetBtn = document.getElementById("reset");
+
+const totalTime = 25 * 60;
+
+let timeLeft = totalTime;
+let interval = null;
+
+const circumference = 2 * Math.PI * 120;
+
+progress.style.strokeDasharray = circumference;
+
+function updateDisplay(){
+
+    const mins = Math.floor(timeLeft / 60);
+    const secs = timeLeft % 60;
+
+    timer.textContent =
+        `${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`;
+
+    const offset =
+        circumference -
+        (timeLeft / totalTime) * circumference;
+
+    progress.style.strokeDashoffset = offset;
+}
+
+function startTimer(){
+
+    if(interval) return;
+
+    interval = setInterval(() => {
+
+        if(timeLeft > 0){
+
+            timeLeft--;
+            updateDisplay();
+
+        }else{
+
+            clearInterval(interval);
+            interval = null;
+
+            alert("🎉 Great Job! Focus Session Complete");
+        }
+
+    },1000);
+}
+
+function pauseTimer(){
+    clearInterval(interval);
+    interval = null;
+}
+
+function resetTimer(){
+
+    clearInterval(interval);
+    interval = null;
+
+    timeLeft = totalTime;
+
+    updateDisplay();
+}
+
+startBtn.addEventListener("click",startTimer);
+pauseBtn.addEventListener("click",pauseTimer);
+resetBtn.addEventListener("click",resetTimer);
+
+updateDisplay();
+</script>
+
+</body>
+</html>
